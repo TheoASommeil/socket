@@ -1,5 +1,5 @@
 all : simple_tcp fifo_fork fifo_no_rela_c fifo_no_rela_s pipe2process pipe_full_duplex ppopen \
-	resource fifo_1ton_s fifo_1ton_c
+	resource fifo_1ton_s fifo_1ton_c data_with_len_c data_with_len_s
 
 simple_tcp : simple_tcp.cpp
 	g++ $< -o $@
@@ -29,4 +29,10 @@ fifo_1ton_s : fifo_single_server_multi_client_s.cpp
 	g++ $< -o $@
 
 fifo_1ton_c : fifo_single_server_multi_client_c.cpp
+	g++ $< -o $@
+
+data_with_len_c : data_with_len_c.cpp
+	g++ $< -o $@
+
+data_with_len_s : data_with_len_s.cpp
 	g++ $< -o $@
