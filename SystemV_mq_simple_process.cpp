@@ -1,3 +1,4 @@
+//MSG_R  MSG_W 不知道在哪个头文件里啊
 #include <sys/msg.h>
 #include <cstdio>
 #include <sys/stat.h>
@@ -22,23 +23,23 @@ int main(int argc, char** argv)
 		_exit(0);
 	}
 
-	if (0 == strncmp("--help", argv[1])) {
+	if (0 == strncmp("--help", argv[1], 6)) {
 		show_help();
 		_exit(0);
 	}
 
 	--argc; ++argv;
 
-	if (0 == strncmp("-c", argv[1])) {
+	if (0 == strncmp("-c", argv[0], 2)) {
 		msgcreate(argc, argv);
 		_exit(0);
-	} else if (0 == strncmp("-s", argv[1])) {
-		msgsend(argc, argv);
+	} else if (0 == strncmp("-s", argv[0], 2)) {
+		msgsnd(argc, argv);
 		_exit(0);
-	} else if (0 == strncmp("-r", argv[1])) {
-		msgrecv(argc, argv);
+	} else if (0 == strncmp("-r", argv[0], 2)) {
+		msgrcv(argc, argv);
 		_exit(0);
-	} else if (0 == strncmp("-r", argv[1])) {
+	} else if (0 == strncmp("-R", argv[0], 2)) {
 		msgrmid(argc, argv);
 		_exit(0);
 	} else {
@@ -70,22 +71,22 @@ void msgcreate(int argc, char** argv)
 		_exit(0);
 	}
 
-	int mqid = msgget(ftok(argv[optind]), oflag);
+	int mqid = msgget(ftok(argv[optind], 0), oflag);
 	_exit(0);
 }
 
-void msgsend(int argc, char** argv)
+void msgsnd(int argc, char** argv)
 {
-	if (argc != 3) {
+	if (argc != 4) {
 		printf("usage: sysV_simp -s <pathname> <#bytes> <type>\n");
 		_exit(0);
 	}
 
 	int len = atoi(argv[1]);
 	long type = atol(argv[2]);
-	int mqid = msgget(ftok(argv[0], 0), MSG_W);
+	int mqid = msgget(ftok(argv[0], 0), SVMSG_MODE);
 
-	struct msgbuf* ptr = calloc(sizeof(long) + len, sizeof(char));
+	struct msgbuf* ptr = (struct msgbuf* )calloc(sizeof(long) + len, sizeof(char));
 	ptr->mtype = type;
 	msgsnd(mqid, ptr, len, 0);
 	_exit(0);
@@ -93,7 +94,7 @@ void msgsend(int argc, char** argv)
 
 #define MAXMSG (8192 + sizeof(long))
 
-void msgrecv(int argc, char** argv)
+void msgrcv(int argc, char** argv)
 {
 	int i = 0;
 	int flag = 0;
@@ -115,19 +116,19 @@ void msgrecv(int argc, char** argv)
 		_exit(0);
 	}
 
-	int mqid = msgget(ftok(argv[optind], 0), MSG_R);
+	int mqid = msgget(ftok(argv[optind], 0), SVMSG_MODE);
 
 	struct msgbuf* buff;
-	buff = calloc(MAXMSG);
+	buff = (struct msgbuf* )malloc(MAXMSG);
 
-	ssize_t n = nsgrcv(mqid, buff, MAXMSG, type, flag);
-	printf("read %d bytes, type = %ld\n", n, buff->mtype);
+	ssize_t n = msgrcv(mqid, buff, MAXMSG, type, flag);
+	printf("read %ld bytes, type = %ld\n", n, buff->mtype);
 	_exit(0);
 }
 
 void msgrmid(int argc, char** argv)
 {
-	if (argc != 1) {
+	if (argc != 2) {
 		printf("usage: sysV_simp -r <pathname>");
 		_exit(0);
 	}

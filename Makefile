@@ -1,5 +1,5 @@
 all : simple_tcp fifo_fork fifo_no_rela_c fifo_no_rela_s pipe2process pipe_full_duplex ppopen \
-	resource fifo_1ton_s fifo_1ton_c data_with_len_c data_with_len_s
+	resource fifo_1ton_s fifo_1ton_c data_with_len_c data_with_len_s sysV_mq sysV_mq_simple_process
 
 simple_tcp : simple_tcp.cpp
 	g++ $< -o $@
@@ -35,4 +35,10 @@ data_with_len_c : data_with_len_c.cpp
 	g++ $< -o $@
 
 data_with_len_s : data_with_len_s.cpp
+	g++ $< -o $@
+
+sysV_mq : SystemV_mq.cpp
+	g++ $< -o $@
+
+sysV_mq_simple_process : SystemV_mq_simple_process.cpp
 	g++ $< -o $@
